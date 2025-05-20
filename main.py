@@ -154,13 +154,13 @@ while running:
         if game_state == "playing":
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    player.move(0, -1, game_map, enemies)
+                    player.move(0, -1, game_map, enemies, message_log) # Pass message_log
                 elif event.key == pygame.K_DOWN:
-                    player.move(0, 1, game_map, enemies)
+                    player.move(0, 1, game_map, enemies, message_log) # Pass message_log
                 elif event.key == pygame.K_LEFT:
-                    player.move(-1, 0, game_map, enemies)
+                    player.move(-1, 0, game_map, enemies, message_log) # Pass message_log
                 elif event.key == pygame.K_RIGHT:
-                    player.move(1, 0, game_map, enemies)
+                    player.move(1, 0, game_map, enemies, message_log) # Pass message_log
                 # elif event.key == pygame.K_e: # Old Test eating - REMOVED
                 #    player.eat(20) 
                 elif event.key == pygame.K_h: # Toggle Help Screen
@@ -186,7 +186,7 @@ while running:
                     if item_index < len(player.inventory):
                         selected_item = player.inventory[item_index]
                         if isinstance(selected_item, Food):
-                            player.eat_food(selected_item)
+                            player.eat_food(selected_item, message_log) # Pass message_log
                             # game_state = previous_game_state # Optionally switch back after eating
                         else:
                             # print(f"{selected_item.name} is not edible.") # Old print
@@ -220,7 +220,7 @@ while running:
         # Enemy turn
         for enemy in enemies:
             if not enemy.is_dead:
-                enemy.move(player.x, player.y, game_map, player)
+                enemy.move(player.x, player.y, game_map, player, message_log) # Pass message_log
 
         # Remove dead enemies
         enemies = [enemy for enemy in enemies if not enemy.is_dead]

@@ -1,6 +1,6 @@
 import pygame
 import random # Import the random module
-import main # For accessing main.message_log
+# import main # For accessing main.message_log - REMOVED
 
 class Enemy:
     def __init__(self, x, y, smiley, health, color, attack_power, vision_radius, name): # Added attack_power, vision_radius, name
@@ -15,7 +15,7 @@ class Enemy:
         self.vision_radius = vision_radius # Parameter
         self.name = name # Parameter
 
-    def move(self, target_x, target_y, game_map, player): # Add player object
+    def move(self, target_x, target_y, game_map, player, message_log): # Added message_log parameter
         if self.is_dead:
             return
 
@@ -46,8 +46,8 @@ class Enemy:
         # Check if the target tile is the player
         if next_x == player.x and next_y == player.y:
             # print(f"Enemy {self.smiley} attacks player!") # Old print
-            main.message_log.add_message(f"The {self.name} attacks you for {self.attack_power} damage.", (255, 100, 100)) # Light red for enemy attack
-            player.take_damage(self.attack_power)
+            message_log.add_message(f"The {self.name} attacks you for {self.attack_power} damage.", (255, 100, 100)) # Light red for enemy attack
+            player.take_damage(self.attack_power, message_log) # Pass message_log
             return # Enemy attacks instead of moving
 
         # Attempt to move (if not attacking player)
@@ -98,14 +98,14 @@ class Enemy:
             pixel_y = self.y * tile_size
             screen.blit(text_surface, (pixel_x, pixel_y))
 
-    def take_damage(self, damage):
+    def take_damage(self, damage, message_log): # Added message_log parameter
         if not self.is_dead:
             self.health -= damage
             if self.health <= 0:
                 self.health = 0
                 self.is_dead = True
                 # print(f"{self.name} ({self.smiley}) at ({self.x}, {self.y}) has died.") # Old print
-                main.message_log.add_message(f"{self.name} dies!", (255, 165, 0)) # Orange for enemy death
+                message_log.add_message(f"{self.name} dies!", (255, 165, 0)) # Orange for enemy death
                 # In a more complex game, this might trigger an animation or drop loot
                 # For now, it just sets the flag and prints a message.
                 # The actual removal from the game's enemy list will be handled in main.py
