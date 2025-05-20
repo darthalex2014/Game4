@@ -1,4 +1,5 @@
 import pygame
+import main # For accessing main.message_log
 
 # Define colors (though WHITE is often defined in main, it's good practice if Player is self-contained)
 WHITE = (255, 255, 255)
@@ -16,6 +17,9 @@ class Player:
         self.max_hunger = 100
         self.hunger = self.max_hunger
         self.is_dead = False # Initialize is_dead flag
+        self.inventory = []
+        self.max_inventory_size = 10
+        self.attack_power = 10 # Player's attack power
 
     def update_hunger(self):
         self.hunger -= 1
@@ -27,31 +31,38 @@ class Player:
             self.health -= 1 # Direct modification for now
             if self.health < 0:
                 self.health = 0
-                # Potentially handle player death here or in the game loop
+            # Optionally add message for starving:
+            # main.message_log.add_message("You are starving!", (255,100,100))
 
-    def eat(self, food_value):
-        self.hunger += food_value
-        if self.hunger > self.max_hunger:
-            self.hunger = self.max_hunger
+
+    def eat_food(self, food_item): 
+        if food_item in self.inventory:
+            self.hunger += food_item.hunger_value
+            if self.hunger > self.max_hunger:
+                self.hunger = self.max_hunger
+            self.inventory.remove(food_item)
+            main.message_log.add_message(f"You ate the {food_item.name}.", (0, 255, 0))
+        else:
+            main.message_log.add_message(f"Cannot eat {food_item.name}, not in inventory.", (255,255,0))
+
 
     def take_damage(self, damage):
         self.health -= damage
         if self.health <= 0:
             self.health = 0
-            self.is_dead = True # Set is_dead flag
-            print("Player has died!") # Keep the print for console feedback
+            self.is_dead = True 
+            main.message_log.add_message("You died!", (255, 0, 0)) # Red color for death
 
-    def move(self, dx, dy, game_map, enemies): # Add enemies list
+    def move(self, dx, dy, game_map, enemies): 
         new_x = self.x + dx
         new_y = self.y + dy
-        attack_power = 10
 
         # Check for enemy at the target location
         for enemy in enemies:
             if not enemy.is_dead and enemy.x == new_x and enemy.y == new_y:
-                print(f"Player attacks enemy {enemy.smiley} at ({enemy.x}, {enemy.y})")
-                enemy.take_damage(attack_power)
-                self.update_hunger() # Attacking also costs hunger
+                main.message_log.add_message(f"You attack the {enemy.name} for {self.attack_power} damage.", (0, 200, 255)) # Light blue for player attack
+                enemy.take_damage(self.attack_power)
+                self.update_hunger() 
                 return # Player attacks instead of moving
 
         # If no enemy, proceed with normal movement

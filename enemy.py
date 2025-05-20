@@ -1,8 +1,9 @@
 import pygame
 import random # Import the random module
+import main # For accessing main.message_log
 
 class Enemy:
-    def __init__(self, x, y, smiley, health, color):
+    def __init__(self, x, y, smiley, health, color, attack_power, vision_radius, name): # Added attack_power, vision_radius, name
         self.x = x  # Grid coordinate
         self.y = y  # Grid coordinate
         self.smiley = smiley
@@ -10,8 +11,9 @@ class Enemy:
         self.health = health
         self.color = color
         self.is_dead = False
-        self.vision_radius = 5 # Range in tiles enemy can see the player
-        self.attack_power = 5 # Enemy attack power
+        self.attack_power = attack_power # Parameter
+        self.vision_radius = vision_radius # Parameter
+        self.name = name # Parameter
 
     def move(self, target_x, target_y, game_map, player): # Add player object
         if self.is_dead:
@@ -43,7 +45,8 @@ class Enemy:
 
         # Check if the target tile is the player
         if next_x == player.x and next_y == player.y:
-            print(f"Enemy {self.smiley} attacks player!")
+            # print(f"Enemy {self.smiley} attacks player!") # Old print
+            main.message_log.add_message(f"The {self.name} attacks you for {self.attack_power} damage.", (255, 100, 100)) # Light red for enemy attack
             player.take_damage(self.attack_power)
             return # Enemy attacks instead of moving
 
@@ -101,7 +104,8 @@ class Enemy:
             if self.health <= 0:
                 self.health = 0
                 self.is_dead = True
-                print(f"Enemy {self.smiley} at ({self.x}, {self.y}) has died.")
+                # print(f"{self.name} ({self.smiley}) at ({self.x}, {self.y}) has died.") # Old print
+                main.message_log.add_message(f"{self.name} dies!", (255, 165, 0)) # Orange for enemy death
                 # In a more complex game, this might trigger an animation or drop loot
                 # For now, it just sets the flag and prints a message.
                 # The actual removal from the game's enemy list will be handled in main.py
